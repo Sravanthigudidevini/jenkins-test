@@ -51,10 +51,11 @@ pipeline {
                 // We run the container in the background and give it a name
                 // The --rm flag ensures the container is removed when stopped.
                 // sh 'docker run -d --rm --name my-python-app -p 8080:5000 ${docker.image(agent.image.id).id}'
+                // changes
                 script {
                     def imageId = docker.image(agent.image.id).id
                     sh "docker run -d --rm --name my-python-app -p 8080:5000 ${imageId}"
-                }                
+                }
                 // Wait for a few seconds to ensure the app has started
                 sleep 5
 
