@@ -50,5 +50,18 @@ pipeline {
                 // sh 'pytest tests/'
             }
         }
+        stage('Get Last Successful Build Number') {
+            steps {
+                script {
+                    def lastSuccessfulBuild = currentBuild.previousSuccessfulBuild
+                    if (lastSuccessfulBuild != null) {
+                        def buildNumber = lastSuccessfulBuild.number
+                        echo "Last successful build number: ${buildNumber}"
+                    } else {
+                        echo "No previous successful build found."
+                    }
+                }
+            }
+        }
     }
 }
