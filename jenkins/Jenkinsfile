@@ -1,79 +1,47 @@
 pipeline {
-    // 1. Define the agent
-    // This tells Jenkins to use a Docker container as the execution environment.
-    // It will use the Dockerfile in the root of the repository to build the image.
-    agent {
-        dockerfile true
-    }
+    agent any
 
-    // 2. Define the stages of the pipeline
     stages {
-        // Stage 1: Checkout
-        // This stage is implicitly handled by Jenkins when it checks out the SCM.
-        // We'll add an explicit step for clarity.
         stage('Checkout') {
             steps {
-                // Get the code from version control
                 checkout scm
                 echo 'Checked out the code successfully.'
-                sh 'echo $PATH; which docker; docker --version'
+                sh 'docker --version'
             }
         }
 
-        // Stage 2: Build
-        // This stage builds the Docker image. The agent definition has already done this,
-        // but we can add steps here if we needed to tag or push the image.
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                echo "Docker image built successfully by the agent."
-                // Example of how you would tag the image for a registry
-                // script {
-                //     docker.image('my-python-app').push('latest')
-                // }
+                script {
+                    docker.build("my-python-app")
+                    echo 'Docker image built successfully.'
+                }
             }
         }
 
-        // Stage 3: Run Tests (Optional but recommended)
-        // For this example, we'll just simulate a test run.
-        stage('Test') {
-            steps {
-                echo "Simulating tests..."
-                // In a real project, you would run your test suite here.
-                // For example: sh 'python -m pytest'
-                echo "Tests passed!"
-            }
-        }
-
-        // Stage 4: Run Application
-        // This stage runs the container to verify it works.
         stage('Run Application') {
             steps {
-                echo "Running the application in the background..."
-
-                // We run the container in the background and give it a name
-                // The --rm flag ensures the container is removed when stopped.
-                // sh 'docker run -d --rm --name my-python-app -p 8080:5000 ${docker.image(agent.image.id).id}'
-                // changes
                 script {
-                    def image = docker.build("my-python-app")
+                    def image = docker.image("my-python-app")
                     sh "docker run -d --rm --name my-python-app -p 8080:5000 ${image.id}"
                 }
-                // Wait for a few seconds to ensure the app has started
                 sleep 5
-
-                echo "Checking the application endpoint..."
-                // Use curl to check if the application is responding correctly
+                echo "Checking application health..."
                 sh 'curl http://localhost:8080'
-
-                echo "Application is running successfully!"
             }
             post {
-                // This 'always' block ensures the container is stopped and removed
-                // regardless of whether the stage succeeded or failed.
                 always {
-                    echo "Stopping the container..."
-                    sh 'docker stop my-python-app'
+                    echo "Stopping and cleaning up the container..."
+                    sh 'docker stop my-python-app || true'
                 }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Simulated test run here."
+                // You can add real test commands like:
+                // sh 'pytest tests/'
             }
         }
     }
