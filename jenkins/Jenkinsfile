@@ -64,7 +64,7 @@ pipeline {
                         echo "Last successful build number: ${buildNumber}"
                         def jobName = env.JOB_NAME.replaceAll("%2F", "/")
                         // def manifestUrl = "${env.JENKINS_URL}job/${jobName}/${lastSuccessfulBuildNum}/artifact/manifest.json"
-                        def ARTIFACTORY_URL = "${env.ARTIFACTORY_URL}/${buildNumber}.json"
+                        def ARTIFACTORY_URL = "${env.ARTIFACTORY_URL}${buildNumber}.json"
                         echo "Artifact URL: ${ARTIFACTORY_URL}"
                     } else {
                         echo "No previous successful build found."
