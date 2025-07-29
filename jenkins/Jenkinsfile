@@ -53,8 +53,8 @@ pipeline {
                 // sh 'docker run -d --rm --name my-python-app -p 8080:5000 ${docker.image(agent.image.id).id}'
                 // changes
                 script {
-                    def imageId = docker.image(agent.image.id).id
-                    sh "docker run -d --rm --name my-python-app -p 8080:5000 ${imageId}"
+                    def image = docker.build("my-python-app")
+                    sh "docker run -d --rm --name my-python-app -p 8080:5000 ${image.id}"
                 }
                 // Wait for a few seconds to ensure the app has started
                 sleep 5
