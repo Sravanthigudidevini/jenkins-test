@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+            JOB_NAME = "test"
+            ARTIFACTORY_URL = "https://artifactory.viasat.com/artifactory/cmob-gen-dev/scm-sslk/system-component-manifest/master/generic_nonwife/system-component-manifest-v"
+        }
+
     stages {
         stage('Checkout') {
             steps {
@@ -57,6 +62,10 @@ pipeline {
                     if (lastSuccessfulBuild != null) {
                         def buildNumber = lastSuccessfulBuild.number
                         echo "Last successful build number: ${buildNumber}"
+                        def jobName = env.JOB_NAME.replaceAll("%2F", "/")
+                        // def manifestUrl = "${env.JENKINS_URL}job/${jobName}/${lastSuccessfulBuildNum}/artifact/manifest.json"
+                        def ARTIFACTORY_URL = "${env.ARTIFACTORY_URL}/{lastSuccessfulBuildNum}/.json"
+                        echo "Artifact URL: ${ARTIFACTORY_URL}"
                     } else {
                         echo "No previous successful build found."
                     }
