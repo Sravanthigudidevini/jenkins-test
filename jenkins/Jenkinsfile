@@ -16,6 +16,7 @@ pipeline {
                 // Get the code from version control
                 checkout scm
                 echo 'Checked out the code successfully.'
+                sh 'echo $PATH; which docker; docker --version'
             }
         }
 
@@ -48,6 +49,7 @@ pipeline {
         stage('Run Application') {
             steps {
                 echo "Running the application in the background..."
+
                 // We run the container in the background and give it a name
                 // The --rm flag ensures the container is removed when stopped.
                 // sh 'docker run -d --rm --name my-python-app -p 8080:5000 ${docker.image(agent.image.id).id}'
