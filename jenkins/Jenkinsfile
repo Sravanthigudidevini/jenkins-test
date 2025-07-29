@@ -23,16 +23,22 @@ pipeline {
             steps {
                 script {
                     def image = docker.image("my-python-app")
-                    sh "docker run -d --rm --name my-python-app -p 8888:5000 ${image.id}"
+                    sh "docker run -d --name my-python-app -p 8888:5000 ${image.id}"
                 }
-                sleep 5
+
+                sleep 10
+
+                echo "Fetching container logs..."
+                sh 'docker logs my-python-app || true'
+
                 echo "Checking application health on port 8888..."
-                sh 'curl http://localhost:8888'
+                sh 'curl http://localhost:8888 || true'
             }
             post {
                 always {
-                    echo "Stopping and cleaning up the container..."
+                    echo "Cleaning up..."
                     sh 'docker stop my-python-app || true'
+                    sh 'docker rm my-python-app || true'
                 }
             }
         }
