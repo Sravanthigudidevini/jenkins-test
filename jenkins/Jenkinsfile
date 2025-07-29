@@ -23,11 +23,11 @@ pipeline {
             steps {
                 script {
                     def image = docker.image("my-python-app")
-                    sh "docker run -d --rm --name my-python-app -p 8080:5000 ${image.id}"
+                    sh "docker run -d --rm --name my-python-app -p 8888:5000 ${image.id}"
                 }
                 sleep 5
-                echo "Checking application health..."
-                sh 'curl http://localhost:8080'
+                echo "Checking application health on port 8888..."
+                sh 'curl http://localhost:8888'
             }
             post {
                 always {
